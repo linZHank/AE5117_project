@@ -9,6 +9,8 @@ from numpy import random
 import matplotlib
 import matplotlib.pyplot as plt
 
+import pdb
+
 
 class CablerEnv(object):
     """
@@ -23,7 +25,28 @@ class CablerEnv(object):
         self.cabler_3 = np.array([self.world_radius*np.cos(-pi/2),self.world_radius*np.sin(-pi/2)])
 
     def reset(self):
-        pass
+        """
+        Reset targe and catcher to a random location
+        Args:
+        Return:
+            obs: {target_loc: array([x,y]), catcher_loc: array([x,y])
+            info: 'coordinate type'
+        """
+        rho_t = random.uniform(0,self.world_radius)
+        theta_t = random.uniform(-pi,pi)
+        self.target = np.array([rho_t*np.cos(theta_t),rho_t*np.sin(theta_t)])
+        rho_c = random.uniform(0,self.world_radius)
+        theta_c = random.uniform(-pi,pi)
+        self.catcher = np.array([rho_c*np.cos(theta_c),rho_c*np.sin(theta_c)])
+        while np.linalg.norm(self.target-self.catcher) <= 0.05:
+            rho_c = random.uniform(0,self.world_radius)
+            theta_c = random.uniform(-pi,pi)
+            self.catcher = np.array([rho_c*np.cos(theta_c),rho_c*np.sin(theta_c)])
+
+        obs=dict(target=self.target, catcher=self.catcher)
+        info='cartesian'
+
+        return obs, info
 
     def step(self, action):
         pass
@@ -49,4 +72,6 @@ class CablerEnv(object):
 
 if __name__ == '__main__':
     env=CablerEnv()
+    obs, info = env.reset()
+    print("obs: {} \ninfo: {}".format(obs, info))
     env.render()
