@@ -27,11 +27,19 @@ class CablerEnv(object):
     def reset(self):
         """
         Reset targe and catcher to a random location
+        Args:
+        Return:
+            obs: {target_loc: array([rho, theta]), catcher_loc: array([rho, theta])
+            info: 'coordinate type'
         """
         self.target = np.array([random.uniform(0,self.world_radius), random.uniform(-pi,pi)])
         self.catcher = np.array([random.uniform(0,self.world_radius), random.uniform(-pi,pi)])
-        while np.linalg.norm(self._polar_to_cartesian(self.target), self._polar_to_cartesian(self.catcher)) <= 0.05:
+        while np.linalg.norm(self._polar_to_cartesian(self.target)-self._polar_to_cartesian(self.catcher)) <= 0.05:
             self.catcher = np.array([random.uniform(0,self.world_radius), random.uniform(-pi,pi)])
+        obs=dict(target=self._polar_to_cartesian(self.target), catcher=self._polar_to_cartesian(self.catcher))
+        info='cartesian'
+
+        return obs, info
 
     def step(self, action):
         pass
@@ -68,5 +76,6 @@ class CablerEnv(object):
 
 if __name__ == '__main__':
     env=CablerEnv()
-
+    obs, info = env.reset()
+    print("obs: {} \ninfo: {}".format(obs,info))
     env.render()
