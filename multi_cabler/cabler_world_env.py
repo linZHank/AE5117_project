@@ -15,15 +15,23 @@ class CablerEnv(object):
     Cabler env class
     """
     def __init__(self):
+        # fixed
         self.world_radius = 1
+        # variable, we use polar coord to represent objects location
         self.catcher = np.zeros(2)
-        self.target = self.catcher + np.array([0,self.world_radius/2])
-        self.cabler_1 = np.array([self.world_radius*np.cos(pi/6),self.world_radius*np.sin(pi/6)])
-        self.cabler_2 = np.array([self.world_radius*np.cos(5*pi/6),self.world_radius*np.sin(5*pi/6)])
-        self.cabler_3 = np.array([self.world_radius*np.cos(-pi/2),self.world_radius*np.sin(-pi/2)])
+        self.target = self.catcher + np.array([pi/2, self.world_radius/2])
+        self.cabler_1 = np.array([self.world_radius, pi/6])
+        self.cabler_2 = np.array([self.world_radius, 5*pi/6])
+        self.cabler_3 = np.array([self.world_radius, -pi/2])
 
     def reset(self):
-        pass
+        """
+        Reset targe and catcher to a random location
+        """
+        self.target = np.array([random.uniform(0,self.world_radius), random.uniform(-pi,pi)])
+        self.catcher = np.array([random.uniform(0,self.world_radius), random.uniform(-pi,pi)])
+        while np.linalg.norm(self._polar_to_cartesian(self.target), self._polar_to_cartesian(self.catcher)) <= 0.05:
+            self.catcher = np.array([random.uniform(0,self.world_radius), random.uniform(-pi,pi)])
 
     def step(self, action):
         pass
@@ -34,19 +42,31 @@ class CablerEnv(object):
         fig, ax = plt.subplots()
         ax.add_artist(bound)
         # draw objects
-        plt.scatter(self.cabler_1[0], self.cabler_1[1], s=200, marker='p', color='crimson')
-        plt.scatter(self.cabler_2[0], self.cabler_2[1], s=200, marker='p', color='orangered')
-        plt.scatter(self.cabler_3[0], self.cabler_3[1], s=200, marker='p', color='magenta')
-        plt.scatter(self.catcher[0], self.catcher[1], s=100, marker='o', color='red')
-        plt.scatter(self.target[0], self.target[1], s=400, marker='*', color='gold')
+        plt.scatter(self._polar_to_cartesian(self.cabler_1)[0], self._polar_to_cartesian(self.cabler_1)[1], s=200, marker='p', color='crimson')
+        plt.scatter(self._polar_to_cartesian(self.cabler_2)[0], self._polar_to_cartesian(self.cabler_2)[1], s=200, marker='p', color='orangered')
+        plt.scatter(self._polar_to_cartesian(self.cabler_3)[0], self._polar_to_cartesian(self.cabler_3)[1], s=200, marker='p', color='magenta')
+        plt.scatter(self._polar_to_cartesian(self.catcher)[0], self._polar_to_cartesian(self.catcher)[1], s=100, marker='o', color='red')
+        plt.scatter(self._polar_to_cartesian(self.target)[0], self._polar_to_cartesian(self.target)[1], s=400, marker='*', color='gold')
         # draw cables
-        plt.plot([self.cabler_1[0],self.catcher[0]], [self.cabler_1[1],self.catcher[1]], linewidth=0.5, linestyle=':', color='k')
-        plt.plot([self.cabler_2[0],self.catcher[0]], [self.cabler_2[1],self.catcher[1]], linewidth=0.5, linestyle=':', color='k')
-        plt.plot([self.cabler_3[0],self.catcher[0]], [self.cabler_3[1],self.catcher[1]], linewidth=0.5, linestyle=':', color='k')
+        plt.plot([self._polar_to_cartesian(self.cabler_1)[0],self._polar_to_cartesian(self.catcher)[0]], [self._polar_to_cartesian(self.cabler_1)[1],self._polar_to_cartesian(self.catcher)[1]], linewidth=0.5, linestyle=':', color='k')
+        plt.plot([self._polar_to_cartesian(self.cabler_2)[0],self._polar_to_cartesian(self.catcher)[0]], [self._polar_to_cartesian(self.cabler_2)[1],self._polar_to_cartesian(self.catcher)[1]], linewidth=0.5, linestyle=':', color='k')
+        plt.plot([self._polar_to_cartesian(self.cabler_3)[0],self._polar_to_cartesian(self.catcher)[0]], [self._polar_to_cartesian(self.cabler_3)[1],self._polar_to_cartesian(self.catcher)[1]], linewidth=0.5, linestyle=':', color='k')
         # set axis
         plt.axis(1.1*np.array([-self.world_radius,self.world_radius,-self.world_radius,self.world_radius]))
         plt.show()
 
+    def _polar_to_cartesian(self, polar_coord):
+        """
+        Args:
+            polar_coord: array([rho, theta])
+        Returns:
+            cart_coord: array([x, y])
+        """
+        cart_coord = np.array([polar_coord[0]*np.cos(polar_coord[1]), polar_coord[0]*np.sin(polar_coord[1])])
+
+        return cart_coord
+
 if __name__ == '__main__':
     env=CablerEnv()
+
     env.render()
