@@ -49,17 +49,41 @@ class QTableAgent(object):
         self.epsilon = self.final_eps + bonus
 
     def train(self):
+        """
+        Update Q-table
+        """
         pass
 
-    def obs_to_state(self, obs):
+    def obs_to_state(self, env):
         """
         Convert observation into indices in Q-table
         Args:
             obs: {target,catcher}
         Returns:
-            index: [dim_0, dim_1, ...]
+            state: array([dx, dy])
+            state_index: [dim_0, dim_1, ...], index of state in Q-table
         """
-        pass
+        state = env.obs['target'] - env.obs['catcher'] # array([dx, dy])
+
+        cartesian_dist_box = np.array([[-np.inf, -env.world_radius],[-env.world_radius, -env.world_radius/20.],[-env.world_radius/20., 0],[0., env.world_radius/20.],[env.world_radius/20., env.world_radius],[env.world_radius, np.inf]]) # dx ranges
+        # box_2 = np.array([[-np.inf, -env.world_radius],[-env.world_radius, -env.world_radius/20.],[-env.world_radius/20., 0],[0., env.world_radius/20.],[env.world_radius/20., env.world_radius],[env.world_radius, np.inf]]) # dy ranges
+        # boxes = [box_1, box_2]
+        state_index = []
+        for i, box in enumerate(cartesian_dist_box):
+            if state[0] >= box[0] and state[0] < box[1]:
+                state_index.append(i)
+                break
+        for i, box in enumerate(cartesian_dist_box):
+            if state[0] >= box[0] and state[0] < box[1]:
+                state_index.append(i)
+                break
+
+        return state, state_index
+
+
+
+
+
 
     def save_table(self):
         pass
