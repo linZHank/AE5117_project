@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """
 Task environment for cablers cooperatively control a device to track and catch a movable target.
 """
@@ -9,7 +10,6 @@ from numpy import random
 import time
 import matplotlib
 import matplotlib.pyplot as plt
-import cv2
 
 import pdb
 
