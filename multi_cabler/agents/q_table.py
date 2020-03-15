@@ -12,8 +12,12 @@ class QTableAgent(object):
         self.name = name
         self.world_radius = env.world_radius
         self.actions = np.array([0., self.world_radius/50]) # cmd_vel
+        self.action_space = 2
+        self.state_space = (6,6)
+        self.state = np.zeros((1,2))
+        self.d_box = np.array([[-np.inf, -self.world_radius],[-self.world_radius, -self.world_radius/20.],[-self.world_radius/20., 0],[0., self.world_radius/20.],[self.world_radius/20., self.world_radius],[self.world_radius, np.inf]]) # displaced ranges
         # variable
-        self.state = np.zeros(2).reshape(1,-1)
+        self.q_table = np.zeros([6,6,2]) # (1st state numbers, 2nd state numbers, ... , action numbers)
         # hyper-parameters
         self.epsilon = 1.
         self.init_eps = 1.
@@ -22,16 +26,16 @@ class QTableAgent(object):
         self.alpha = 0.01 # learning rate
         self.gamma = 0.99 # discount rate
 
-    def epsilon_greedy(self, state):
+    def epsilon_greedy(self, state_index):
         """
         Take action based on epsilon_greedy
         Args:
-            state: array([d_x, d_y])
+            state_index: [i_dx, i_dy]
         Returns:
-            action: array([v_x, v_y])
+            action_index:
         """
-        if random.uniform() >self.epsilon:
-            pass
+        if random.uniform() > self.epsilon:
+            action_index = np.argmax(self.q_table[state_index[0],state_index[1]])
         else:
             print("{} Take a random action!".format(self.name))
 
@@ -49,11 +53,12 @@ class QTableAgent(object):
         bonus = np.clip(bonus, 0., self.init_eps-self.final_eps)
         self.epsilon = self.final_eps + bonus
 
-    def train(self):
+    def train(self, state_index, action_index, next_state_index, reward):
         """
         Update Q-table
         """
-        pass
+        self.q_table[state_index[0],state_index[1],action_index] = self.q_table[state_index[0],state_index[1],action_index]+self.alpha*(reward+self.gamma*np.max(self.q_table[next_state_index[0],next_state_index[1]])-self.q_table[state_index[0],state_index[1],action_index])
+
 
     def obs_to_state(self, obs):
         """
@@ -64,24 +69,21 @@ class QTableAgent(object):
             state: array([dx, dy])
             state_index: [dim_0, dim_1, ...], index of state in Q-table
         """
-        state = obs['target'] - obs['catcher'] # array([dx, dy])
+        state = (obs['target']-obs['catcher']).reshape(1,-1) # array([dx, dy])
         # define state ranges
         dx_box = np.array([[-np.inf, -self.world_radius],[-self.world_radius, -self.world_radius/20.],[-self.world_radius/20., 0],[0., self.world_radius/20.],[self.world_radius/20., self.world_radius],[self.world_radius, np.inf]]) # dx ranges
         # compute index of state in Q-table
         state_index = []
         for i, box in enumerate(dx_box):
-            if state[0] >= box[0] and state[0] < box[1]:
+            if state[0,0] >= box[0] and state[0,0] < box[1]:
                 state_index.append(i)
                 break
         for i, box in enumerate(dx_box):
-            if state[1] >= box[0] and state[1] < box[1]:
+            if state[0,1] >= box[0] and state[0,1] < box[1]:
                 state_index.append(i)
                 break
 
         return state, state_index
-
-
-
 
 
 
