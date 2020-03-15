@@ -99,7 +99,7 @@ class CablerEnv(object):
         plt.axis(1.1*np.array([-self.world_radius,self.world_radius,-self.world_radius,self.world_radius]))
 
         plt.show(block=False)
-        plt.pause(0.1)
+        plt.pause(0.01)
         plt.clf()
 
 

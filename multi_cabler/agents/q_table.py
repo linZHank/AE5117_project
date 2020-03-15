@@ -6,6 +6,7 @@ import os
 import numpy as np
 from numpy import random
 
+
 class QTableAgent(object):
     def __init__(self, name, env):
         # fixed
@@ -89,7 +90,6 @@ class QTableAgent(object):
 
         return state, state_index
 
-
-
-    def save_table(self):
-        pass
+    def save_table(self, save_dir):
+        np.save(os.path.join(save_dir, self.name, 'q_table.npy'), self.q_table)
+        print("\nQ-table saved!\n")
