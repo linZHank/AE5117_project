@@ -114,10 +114,10 @@ class CablerEnv(object):
 
         return cart_coord
 
-if __name__ == '__main__':
-    env=CablerEnv()
-    obs, info = env.reset()
-    for st in range(200):
-        env.step(random.randn(2))
-        print("obs: {} \ninfo: {}".format(obs, info))
-        env.render()
+# if __name__ == '__main__':
+#     env=CablerEnv()
+#     obs, info = env.reset()
+#     for st in range(200):
+#         env.step(random.randn(2))
+#         print("obs: {} \ninfo: {}".format(obs, info))
+#         env.render()

@@ -10,7 +10,8 @@ class QTableAgent(object):
     def __init__(self, name, env):
         # fixed
         self.name = name
-        self.actions = np.array([0., env.world_radius/50]) # cmd_vel
+        self.world_radius = env.world_radius
+        self.actions = np.array([0., self.world_radius/50]) # cmd_vel
         # variable
         self.state = np.zeros(2).reshape(1,-1)
         # hyper-parameters
@@ -54,7 +55,7 @@ class QTableAgent(object):
         """
         pass
 
-    def obs_to_state(self, env):
+    def obs_to_state(self, obs):
         """
         Convert observation into indices in Q-table
         Args:
@@ -63,18 +64,17 @@ class QTableAgent(object):
             state: array([dx, dy])
             state_index: [dim_0, dim_1, ...], index of state in Q-table
         """
-        state = env.obs['target'] - env.obs['catcher'] # array([dx, dy])
-
-        cartesian_dist_box = np.array([[-np.inf, -env.world_radius],[-env.world_radius, -env.world_radius/20.],[-env.world_radius/20., 0],[0., env.world_radius/20.],[env.world_radius/20., env.world_radius],[env.world_radius, np.inf]]) # dx ranges
-        # box_2 = np.array([[-np.inf, -env.world_radius],[-env.world_radius, -env.world_radius/20.],[-env.world_radius/20., 0],[0., env.world_radius/20.],[env.world_radius/20., env.world_radius],[env.world_radius, np.inf]]) # dy ranges
-        # boxes = [box_1, box_2]
+        state = obs['target'] - obs['catcher'] # array([dx, dy])
+        # define state ranges
+        dx_box = np.array([[-np.inf, -self.world_radius],[-self.world_radius, -self.world_radius/20.],[-self.world_radius/20., 0],[0., self.world_radius/20.],[self.world_radius/20., self.world_radius],[self.world_radius, np.inf]]) # dx ranges
+        # compute index of state in Q-table
         state_index = []
-        for i, box in enumerate(cartesian_dist_box):
+        for i, box in enumerate(dx_box):
             if state[0] >= box[0] and state[0] < box[1]:
                 state_index.append(i)
                 break
-        for i, box in enumerate(cartesian_dist_box):
-            if state[0] >= box[0] and state[0] < box[1]:
+        for i, box in enumerate(dx_box):
+            if state[1] >= box[0] and state[1] < box[1]:
                 state_index.append(i)
                 break
 
