@@ -26,10 +26,10 @@ class CablerEnv(object):
         self.fig, self.ax = plt.subplots()
         # variable, we use polar coord to represent objects location
         self.catcher = np.zeros(2)
-        self.target = self.catcher + np.array([pi/2, self.world_radius/2])
-        self.cabler_1 = np.array([self.world_radius, pi/6])
-        self.cabler_2 = np.array([self.world_radius, 5*pi/6])
-        self.cabler_3 = np.array([self.world_radius, -pi/2])
+        self.target = self.catcher + np.array([0,self.world_radius/2])
+        self.cabler_1 = np.array([self.world_radius*np.cos(pi/6),self.world_radius*np.sin(pi/6)])
+        self.cabler_2 = np.array([self.world_radius*np.cos(5*pi/6),self.world_radius*np.sin(5*pi/6)])
+        self.cabler_3 = np.array([self.world_radius*np.cos(-pi/2),self.world_radius*np.sin(-pi/2)])
         self.step_count = 0
 
     def reset(self):
@@ -86,15 +86,15 @@ class CablerEnv(object):
         fig, ax = plt.gcf(), plt.gca()
         ax.add_artist(bound)
         # draw objects
-        plt.scatter(self._polar_to_cartesian(self.cabler_1)[0], self._polar_to_cartesian(self.cabler_1)[1], s=200, marker='p', color='crimson')
-        plt.scatter(self._polar_to_cartesian(self.cabler_2)[0], self._polar_to_cartesian(self.cabler_2)[1], s=200, marker='p', color='orangered')
-        plt.scatter(self._polar_to_cartesian(self.cabler_3)[0], self._polar_to_cartesian(self.cabler_3)[1], s=200, marker='p', color='magenta')
-        plt.scatter(self._polar_to_cartesian(self.catcher)[0], self._polar_to_cartesian(self.catcher)[1], s=100, marker='o', color='red')
-        plt.scatter(self._polar_to_cartesian(self.target)[0], self._polar_to_cartesian(self.target)[1], s=400, marker='*', color='gold')
+        plt.scatter(self.cabler_1[0], self.cabler_1[1], s=200, marker='p', color='crimson')
+        plt.scatter(self.cabler_2[0], self.cabler_2[1], s=200, marker='p', color='orangered')
+        plt.scatter(self.cabler_3[0], self.cabler_3[1], s=200, marker='p', color='magenta')
+        plt.scatter(self.catcher[0], self.catcher[1], s=100, marker='o', color='red')
+        plt.scatter(self.target[0], self.target[1], s=400, marker='*', color='gold')
         # draw cables
-        plt.plot([self._polar_to_cartesian(self.cabler_1)[0],self._polar_to_cartesian(self.catcher)[0]], [self._polar_to_cartesian(self.cabler_1)[1],self._polar_to_cartesian(self.catcher)[1]], linewidth=0.5, linestyle=':', color='k')
-        plt.plot([self._polar_to_cartesian(self.cabler_2)[0],self._polar_to_cartesian(self.catcher)[0]], [self._polar_to_cartesian(self.cabler_2)[1],self._polar_to_cartesian(self.catcher)[1]], linewidth=0.5, linestyle=':', color='k')
-        plt.plot([self._polar_to_cartesian(self.cabler_3)[0],self._polar_to_cartesian(self.catcher)[0]], [self._polar_to_cartesian(self.cabler_3)[1],self._polar_to_cartesian(self.catcher)[1]], linewidth=0.5, linestyle=':', color='k')
+        plt.plot([self.cabler_1[0],self.catcher[0]], [self.cabler_1[1],self.catcher[1]], linewidth=0.5, linestyle=':', color='k')
+        plt.plot([self.cabler_2[0],self.catcher[0]], [self.cabler_2[1],self.catcher[1]], linewidth=0.5, linestyle=':', color='k')
+        plt.plot([self.cabler_3[0],self.catcher[0]], [self.cabler_3[1],self.catcher[1]], linewidth=0.5, linestyle=':', color='k')
         # set axis
         plt.axis(1.1*np.array([-self.world_radius,self.world_radius,-self.world_radius,self.world_radius]))
 
@@ -113,11 +113,3 @@ class CablerEnv(object):
         cart_coord = np.array([polar_coord[0]*np.cos(polar_coord[1]), polar_coord[0]*np.sin(polar_coord[1])])
 
         return cart_coord
-
-# if __name__ == '__main__':
-#     env=CablerEnv()
-#     obs, info = env.reset()
-#     for st in range(200):
-#         env.step(random.randn(2))
-#         print("obs: {} \ninfo: {}".format(obs, info))
-#         env.render()
