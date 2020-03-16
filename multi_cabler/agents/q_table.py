@@ -15,11 +15,12 @@ class QTableAgent(object):
         self.actions = np.array([0., self.world_radius/50])
         self.action_space = self.actions.shape
         self.d_box = np.array([[-np.inf, -self.world_radius],[-self.world_radius, -self.world_radius/10.],[-self.world_radius/10., -self.world_radius/50],[-self.world_radius/50,0],[0., self.world_radius/50.],[self.world_radius/50., self.world_radius/10.],[self.world_radius/10., self.world_radius],[self.world_radius, np.inf]]) # displaced ranges
+        self.l_box = np.array([[0, self.world_radius/2.],[self.world_radius/2., self.world_radius],[self.world_radius, 3*self.world_radius/2.],[3*self.world_radius/2., np.inf]]) # displaced ranges
         self.state_space = (self.d_box.shape[0],self.d_box.shape[0])
         # variable
-        self.state = np.zeros((1,2))
+        self.state = np.zeros((1,3))
         self.action = 0
-        self.q_table = np.zeros([8,8,2]) # (1st state numbers, 2nd state numbers, ... , action numbers)
+        self.q_table = np.zeros([8,8,4,2]) # (1st state numbers, 2nd state numbers, ... , action numbers)
         # hyper-parameters
         self.epsilon = 1.
         self.init_eps = 1.
@@ -71,12 +72,12 @@ class QTableAgent(object):
         Args:
             obs: {target,catcher}
         Returns:
-            state: array([dx, dy])
+            state: array([dx, dy, cable_length])
             state_index: [dim_0, dim_1, ...], index of state in Q-table
         """
-        state = (obs['target']-obs['catcher']).reshape(1,-1) # array([dx, dy])
-        # define state ranges
-        # dx_box = np.array([[-np.inf, -self.world_radius],[-self.world_radius, -self.world_radius/20.],[-self.world_radius/20., 0],[0., self.world_radius/20.],[self.world_radius/20., self.world_radius],[self.world_radius, np.inf]]) # dx ranges
+        dx_dy = (obs['target']-obs['catcher']) # array([dx, dy])
+        cable_length = np.linalg.norm(obs[self.name]-obs['catcher'])
+        state = np.array([[dx_dy[0],dx_dy[1],cable_length]])
         # compute index of state in Q-table
         state_index = []
         for i, box in enumerate(self.d_box):
@@ -87,9 +88,16 @@ class QTableAgent(object):
             if state[0,1] >= box[0] and state[0,1] < box[1]:
                 state_index.append(i)
                 break
+        for i, box in enumerate(self.l_box):
+            if state[0,2] >= box[0] and state[0,2] < box[1]:
+                state_index.append(i)
+                break
 
         return state, state_index
 
     def save_table(self, save_dir):
-        np.save(os.path.join(save_dir, self.name, 'q_table.npy'), self.q_table)
+        save_dir = os.path.join(save_dir, self.name)
+        if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+        np.save(os.path.join(save_dir, 'q_table.npy'), self.q_table)
         print("\nQ-table saved!\n")

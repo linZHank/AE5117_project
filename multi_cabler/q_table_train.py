@@ -6,17 +6,17 @@ from numpy import random
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-from envs.cabler_world_env import CablerEnv
+from envs.tri_cabler_kine_env import TriCablerKineEnv
 from agents.q_table import QTableAgent
 
 
 if __name__ == '__main__':
-    env = CablerEnv()
+    env = TriCablerKineEnv()
     agent_0 = QTableAgent(name='cabler_0', env=env)
     agent_1 = QTableAgent(name='cabler_1', env=env)
     agent_2 = QTableAgent(name='cabler_2', env=env)
 
-    num_episodes = 1000
+    num_episodes = 2000
     sedimentary_returns = []
     episodic_returns = []
     ep = 0
@@ -24,12 +24,12 @@ if __name__ == '__main__':
         done, total_reward = False, []
         obs, _ = env.reset()
         state_0, s_i_0 = agent_0.obs_to_state(obs)
-        agent_0.linear_epsilon_decay(episode=ep, decay_period=600)
+        agent_0.linear_epsilon_decay(episode=ep, decay_period=1200)
         state_1, s_i_1 = agent_1.obs_to_state(obs)
-        agent_0.linear_epsilon_decay(episode=ep, decay_period=600)
+        agent_0.linear_epsilon_decay(episode=ep, decay_period=1200)
         state_2, s_i_2 = agent_2.obs_to_state(obs)
-        agent_2.linear_epsilon_decay(episode=ep, decay_period=600)
-        for i in range(150):
+        agent_2.linear_epsilon_decay(episode=ep, decay_period=1200)
+        for i in range(180):
             a_i_0 = agent_0.epsilon_greedy(s_i_0)
             a_i_1 = agent_1.epsilon_greedy(s_i_1)
             a_i_2 = agent_2.epsilon_greedy(s_i_2)
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
 
     # save Q-tables
-    save_dir = os.path.dirname(sys.path[0])+"/saved_models/cabler_kine/qtable/"+datetime.now().strftime("%Y-%m-%d-%H-%M")
+    save_dir = os.path.join(sys.path[0], 'saved_models/tri_cabler_kine/qtable', datetime.now().strftime("%Y-%m-%d-%H-%M"))
     agent_0.save_table(save_dir=save_dir)
     agent_1.save_table(save_dir=save_dir)
     agent_2.save_table(save_dir=save_dir)

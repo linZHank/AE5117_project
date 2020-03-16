@@ -14,9 +14,9 @@ import matplotlib.pyplot as plt
 import pdb
 
 
-class CablerEnv(object):
+class TriCablerKineEnv(object):
     """
-    Cabler env class
+    Three cabler kinematics env class
     """
     def __init__(self):
         # fixed
@@ -37,7 +37,7 @@ class CablerEnv(object):
         Reset targe and catcher to a random location
         Args:
         Return:
-            obs: {target_loc: array([x,y]), catcher_loc: array([x,y])
+            obs: {target_loc: array([x,y]), catcher_loc: array([x,y], cabler_loc: array([x,y]...)
             info: 'coordinate type'
         """
         self.step_count = 0
@@ -51,7 +51,7 @@ class CablerEnv(object):
             rho_c = random.uniform(0,self.world_radius)
             theta_c = random.uniform(-pi,pi)
             self.catcher = np.array([rho_c*np.cos(theta_c),rho_c*np.sin(theta_c)])
-        obs=dict(target=self.target, catcher=self.catcher)
+        obs=dict(target=self.target, catcher=self.catcher, cabler_0=self.cabler_0, cabler_1=self.cabler_1, cabler_2=self.cabler_2)
         info='cartesian'
 
         return obs, info
@@ -71,7 +71,7 @@ class CablerEnv(object):
         if np.linalg.norm(self.catcher+action) < self.world_radius:
             self.catcher += action
         self.step_count += 1
-        obs=dict(target=self.target, catcher=self.catcher)
+        obs=dict(target=self.target, catcher=self.catcher, cabler_0=self.cabler_0, cabler_1=self.cabler_1, cabler_2=self.cabler_2)
         reward = -np.linalg.norm(self.target-self.catcher)
         done = False
         if self.step_count >= self.max_steps:
