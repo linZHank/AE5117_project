@@ -67,12 +67,14 @@ class TriCablerKineEnv(object):
             done: bool
             info: 'coordinate type'
         """
+        prev_dist = -np.linalg.norm(self.target-self.catcher)
         action = np.clip(action,-self.world_radius/20.,self.world_radius/20.)
         if np.linalg.norm(self.catcher+action) < self.world_radius:
             self.catcher += action
         self.step_count += 1
         obs=dict(target=self.target, catcher=self.catcher, cabler_0=self.cabler_0, cabler_1=self.cabler_1, cabler_2=self.cabler_2)
-        reward = -np.linalg.norm(self.target-self.catcher)
+        pres_dist = -np.linalg.norm(self.target-self.catcher)
+        reward = pres_dist - prev_dist
         done = False
         if self.step_count >= self.max_steps:
             done = True
