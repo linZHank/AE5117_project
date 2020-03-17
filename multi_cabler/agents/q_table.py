@@ -38,7 +38,7 @@ class QTableAgent(object):
             action_index:
         """
         if random.uniform() > self.epsilon:
-            action_index = np.argmax(self.q_table[state_index[0],state_index[1]])
+            action_index = np.argmax(self.q_table[state_index[0],state_index[1], state_index[2]])
         else:
             action_index = random.randint(self.action_space[0])
             print("!{} Take a random action: {}:{}".format(self.name, action_index, self.actions[action_index]))
@@ -63,7 +63,7 @@ class QTableAgent(object):
         """
         Update Q-table
         """
-        self.q_table[state_index[0],state_index[1],action_index] = self.q_table[state_index[0],state_index[1],action_index]+self.alpha*(reward+self.gamma*np.max(self.q_table[next_state_index[0],next_state_index[1]])-self.q_table[state_index[0],state_index[1],action_index])
+        self.q_table[state_index[0],state_index[1],state_index[2],action_index] = self.q_table[state_index[0],state_index[1],state_index[2],action_index]+self.alpha*(reward+self.gamma*np.max(self.q_table[next_state_index[0],next_state_index[1],state_index[2]])-self.q_table[state_index[0],state_index[1],state_index[2],action_index])
 
 
     def obs_to_state(self, obs):

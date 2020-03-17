@@ -26,7 +26,7 @@ if __name__ == '__main__':
         state_0, s_i_0 = agent_0.obs_to_state(obs)
         agent_0.linear_epsilon_decay(episode=ep, decay_period=1200)
         state_1, s_i_1 = agent_1.obs_to_state(obs)
-        agent_0.linear_epsilon_decay(episode=ep, decay_period=1200)
+        agent_1.linear_epsilon_decay(episode=ep, decay_period=1200)
         state_2, s_i_2 = agent_2.obs_to_state(obs)
         agent_2.linear_epsilon_decay(episode=ep, decay_period=1200)
         for i in range(180):
