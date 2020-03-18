@@ -31,9 +31,7 @@ class MultiCablerKineEnv(object):
             position = np.transpose(np.array([self.world_radius*np.cos(np.arange(0,2*pi,2*pi/num_cablers)),self.world_radius*np.sin(np.arange(0,2*pi,2*pi/num_cablers))])),
             velocity = np.zeros([num_cablers,2])
         )
-        # self.cabler_0 = np.array([self.world_radius*np.cos(pi/6),self.world_radius*np.sin(pi/6)])
-        # self.cabler_1 = np.array([self.world_radius*np.cos(5*pi/6),self.world_radius*np.sin(5*pi/6)])
-        # self.cabler_2 = np.array([self.world_radius*np.cos(-pi/2),self.world_radius*np.sin(-pi/2)])
+
         self.step_count = 0
 
     def reset(self):
@@ -60,5 +58,19 @@ class MultiCablerKineEnv(object):
         pass
 
     def render(self):
-        # plot world boundary and
-        pass
+        fig, ax = plt.gcf(), plt.gca()
+        # plot world boundary
+        bound = plt.Circle((0,0), self.world_radius, linewidth=2, color='k', fill=False)
+        ax.add_artist(bound)
+        # draw target and catcher
+        plt.scatter(self.target['position'][0], self.target['position'][1], s=200, marker='*', color='crimson')
+        plt.scatter(self.catcher['position'][0], self.catcher['position'][1], s=200, marker='p', color='deepskyblue')
+        # draw cablers
+        plt.scatter(self.cablers['position'][:,0], self.cablers['position'][:,1], s=200, marker='o', color='steelblue')
+        # draw cables
+        for i in range(len(self.cablers['id'])):
+            plt.plot([self.cablers['position'][i,0],self.catcher['position'][0]], [self.cablers['position'][i,1],self.catcher['position'][1]], linewidth=0.5, linestyle=':', color='k')
+        # set axis
+        plt.axis(1.1*np.array([-self.world_radius,self.world_radius,-self.world_radius,self.world_radius]))
+
+        plt.show()

@@ -4,7 +4,8 @@ from numpy import random
 
 
 if __name__ == '__main__':
-    env=MultiCablerKineEnv()
+    env=MultiCablerKineEnv(num_cablers=5)
+    env.render()
     # obs, info = env.reset()
     # for st in range(30):
     #     env.step(random.randn(2))
