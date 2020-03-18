@@ -57,7 +57,7 @@ class MultiCablerKineEnv(object):
         """
         pass
 
-    def render(self):
+    def render(self,pause=1):
         fig, ax = plt.gcf(), plt.gca()
         # plot world boundary
         bound = plt.Circle((0,0), self.world_radius, linewidth=2, color='k', fill=False)
@@ -73,4 +73,6 @@ class MultiCablerKineEnv(object):
         # set axis
         plt.axis(1.1*np.array([-self.world_radius,self.world_radius,-self.world_radius,self.world_radius]))
 
-        plt.show()
+        plt.show(block=False)
+        plt.pause(pause)
+        plt.clf()
