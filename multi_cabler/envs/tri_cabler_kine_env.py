@@ -74,7 +74,8 @@ class TriCablerKineEnv(object):
         self.step_count += 1
         obs=dict(target=self.target, catcher=self.catcher, cabler_0=self.cabler_0, cabler_1=self.cabler_1, cabler_2=self.cabler_2)
         pres_dist = -np.linalg.norm(self.target-self.catcher)
-        reward = pres_dist - prev_dist
+        # reward = pres_dist - prev_dist
+        reward = pres_dist
         done = False
         if self.step_count >= self.max_steps:
             done = True
